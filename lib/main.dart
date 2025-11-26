@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/src/utils/theme_provider.dart';
-import 'package:myapp/src/views/home/home_screen.dart';
+import 'package:myapp/src/routes/app_router.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized(); // Ensure Flutter is initialized.
   runApp(
     ChangeNotifierProvider(
       create: (context) => ThemeProvider(),
@@ -83,12 +84,12 @@ class MyApp extends StatelessWidget {
 
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
-        return MaterialApp(
+        return MaterialApp.router(
           title: 'School Management System',
           theme: lightTheme,
           darkTheme: darkTheme,
           themeMode: themeProvider.themeMode,
-          home: const HomeScreen(),
+          routerConfig: AppRouter.router,
         );
       },
     );

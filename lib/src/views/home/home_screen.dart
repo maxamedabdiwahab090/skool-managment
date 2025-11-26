@@ -1,39 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/src/utils/theme_provider.dart';
-import 'package:myapp/src/views/dashboard/dashboard_screen.dart';
-import 'package:myapp/src/views/student/student_list_screen.dart';
-import 'package:myapp/src/views/teacher/teacher_list_screen.dart';
-import 'package:myapp/src/views/attendance/attendance_screen.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class HomeScreen extends StatelessWidget {
+  final Widget child;
 
-  @override
-  HomeScreenState createState() => HomeScreenState();
-}
-
-class HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
-
-  static final List<Widget> _widgetOptions = <Widget>[
-    const DashboardScreen(),
-    const StudentListScreen(),
-    const TeacherListScreen(),
-    const AttendanceScreen(),
-    // Add other screens here
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    Navigator.pop(context); // Close the drawer
-  }
+  const HomeScreen({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final isWideScreen = MediaQuery.of(context).size.width > 600;
 
     return Scaffold(
       appBar: AppBar(
@@ -48,47 +26,103 @@ class HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              child: const Text(
-                'Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.dashboard),
-              title: const Text('Dashboard'),
-              onTap: () => _onItemTapped(0),
-            ),
-            ListTile(
-              leading: const Icon(Icons.people),
-              title: const Text('Students'),
-              onTap: () => _onItemTapped(1),
-            ),
-            ListTile(
-              leading: const Icon(Icons.school),
-              title: const Text('Teachers'),
-              onTap: () => _onItemTapped(2),
-            ),
-            ListTile(
-              leading: const Icon(Icons.calendar_today),
-              title: const Text('Attendance'),
-              onTap: () => _onItemTapped(3),
-            ),
-            // Add other drawer items here
-          ],
-        ),
-      ),
-      body: _widgetOptions.elementAt(_selectedIndex),
+      drawer: isWideScreen ? null : _buildDrawer(context),
+      body: isWideScreen
+          ? Row(
+              children: [
+                _buildPermanentDrawer(context),
+                Expanded(child: child),
+              ],
+            )
+          : child,
     );
+  }
+
+  Widget _buildDrawer(BuildContext context) {
+    return Drawer(
+      child: _buildDrawerContent(context),
+    );
+  }
+
+  Widget _buildPermanentDrawer(BuildContext context) {
+    return Drawer(
+      elevation: 1.0,
+      child: _buildDrawerContent(context),
+    );
+  }
+
+  Widget _buildDrawerContent(BuildContext context) {
+    return ListView(
+      padding: EdgeInsets.zero,
+      children: <Widget>[
+        DrawerHeader(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          child: const Text(
+            'Menu',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+            ),
+          ),
+        ),
+        ListTile(
+          leading: const Icon(Icons.dashboard),
+          title: const Text('Dashboard'),
+          onTap: () {
+            context.go('/dashboard');
+            _closeDrawerIfNecessary(context);
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.people),
+          title: const Text('Students'),
+          onTap: () {
+            context.go('/students');
+            _closeDrawerIfNecessary(context);
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.school),
+          title: const Text('Teachers'),
+          onTap: () {
+            context.go('/teachers');
+            _closeDrawerIfNecessary(context);
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.payment),
+          title: const Text('Fees'),
+          onTap: () {
+            context.go('/fees');
+            _closeDrawerIfNecessary(context);
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.calendar_today),
+          title: const Text('Attendance'),
+          onTap: () {
+            context.go('/attendance');
+            _closeDrawerIfNecessary(context);
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.grading),
+          title: const Text('Grades'),
+          onTap: () {
+            context.go('/grades');
+            _closeDrawerIfNecessary(context);
+          },
+        ),
+      ],
+    );
+  }
+
+  void _closeDrawerIfNecessary(BuildContext context) {
+    final isWideScreen = MediaQuery.of(context).size.width > 600;
+    if (!isWideScreen) {
+      Navigator.of(context).pop();
+    }
   }
 }

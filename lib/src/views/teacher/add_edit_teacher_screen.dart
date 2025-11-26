@@ -14,16 +14,14 @@ class AddEditTeacherScreen extends StatefulWidget {
 class AddEditTeacherScreenState extends State<AddEditTeacherScreen> {
   final _formKey = GlobalKey<FormState>();
   late String _name;
-  String? _subject;
-  String? _phoneNumber;
+  late String _subject;
   final _teacherRepository = TeacherRepository();
 
   @override
   void initState() {
     super.initState();
     _name = widget.teacher?.name ?? '';
-    _subject = widget.teacher?.subject;
-    _phoneNumber = widget.teacher?.phoneNumber;
+    _subject = widget.teacher?.subject ?? '';
   }
 
   void _saveForm() {
@@ -33,7 +31,6 @@ class AddEditTeacherScreenState extends State<AddEditTeacherScreen> {
         id: widget.teacher?.id,
         name: _name,
         subject: _subject,
-        phoneNumber: _phoneNumber,
       );
 
       if (widget.teacher == null) {
@@ -72,12 +69,13 @@ class AddEditTeacherScreenState extends State<AddEditTeacherScreen> {
               TextFormField(
                 initialValue: _subject,
                 decoration: const InputDecoration(labelText: 'Subject'),
-                onSaved: (value) => _subject = value,
-              ),
-              TextFormField(
-                initialValue: _phoneNumber,
-                decoration: const InputDecoration(labelText: 'Phone Number'),
-                onSaved: (value) => _phoneNumber = value,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a subject';
+                  }
+                  return null;
+                },
+                onSaved: (value) => _subject = value!,
               ),
               const SizedBox(height: 20),
               ElevatedButton(

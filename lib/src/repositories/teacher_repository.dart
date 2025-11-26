@@ -1,37 +1,38 @@
-import 'package:myapp/src/api/db_provider.dart';
 import 'package:myapp/src/models/teacher.dart';
+import 'package:myapp/src/services/database_helper.dart';
 
 class TeacherRepository {
-  final dbProvider = DBProvider.db;
+  final DatabaseHelper _databaseHelper = DatabaseHelper();
 
-  Future<int> createTeacher(Teacher teacher) async {
-    final db = await dbProvider.database;
-    var res = await db.insert("teachers", teacher.toMap());
-    return res;
+  Future<void> createTeacher(Teacher teacher) async {
+    final db = await _databaseHelper.database;
+    await db.insert('teachers', teacher.toMap());
   }
 
-  Future<List<Teacher>> getAllTeachers() async {
-    final db = await dbProvider.database;
-    var res = await db.query("teachers");
-    List<Teacher> list = res.isNotEmpty ? res.map((c) => Teacher.fromMap(c)).toList() : [];
-    return list;
+  Future<List<Teacher>> getTeachers() async {
+    final db = await _databaseHelper.database;
+    final List<Map<String, dynamic>> maps = await db.query('teachers');
+    return List.generate(maps.length, (i) {
+      return Teacher.fromMap(maps[i]);
+    });
   }
 
-  Future<Teacher?> getTeacherById(int id) async {
-    final db = await dbProvider.database;
-    var res = await db.query("teachers", where: "id = ?", whereArgs: [id]);
-    return res.isNotEmpty ? Teacher.fromMap(res.first) : null;
+  Future<void> updateTeacher(Teacher teacher) async {
+    final db = await _databaseHelper.database;
+    await db.update(
+      'teachers',
+      teacher.toMap(),
+      where: 'id = ?',
+      whereArgs: [teacher.id],
+    );
   }
 
-  Future<int> updateTeacher(Teacher teacher) async {
-    final db = await dbProvider.database;
-    var res = await db.update("teachers", teacher.toMap(), where: "id = ?", whereArgs: [teacher.id]);
-    return res;
-  }
-
-  Future<int> deleteTeacher(int id) async {
-    final db = await dbProvider.database;
-    var res = await db.delete("teachers", where: "id = ?", whereArgs: [id]);
-    return res;
+  Future<void> deleteTeacher(int id) async {
+    final db = await _databaseHelper.database;
+    await db.delete(
+      'teachers',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 }

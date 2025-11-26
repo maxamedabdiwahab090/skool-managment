@@ -1,31 +1,31 @@
 class Attendance {
-  int? id;
-  int? studentId;
-  int? teacherId;
-  DateTime date;
-  String status;
+  final int? id;
+  final int studentId;
+  final DateTime date;
+  final bool isPresent;
 
   Attendance({
     this.id,
-    this.studentId,
-    this.teacherId,
+    required this.studentId,
     required this.date,
-    required this.status,
+    required this.isPresent,
   });
 
-  factory Attendance.fromMap(Map<String, dynamic> json) => Attendance(
-        id: json["id"],
-        studentId: json["student_id"],
-        teacherId: json["teacher_id"],
-        date: DateTime.parse(json["date"]),
-        status: json["status"],
-      );
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'studentId': studentId,
+      'date': date.toIso8601String(),
+      'isPresent': isPresent ? 1 : 0,
+    };
+  }
 
-  Map<String, dynamic> toMap() => {
-        "id": id,
-        "student_id": studentId,
-        "teacher_id": teacherId,
-        "date": date.toIso8601String(),
-        "status": status,
-      };
+  factory Attendance.fromMap(Map<String, dynamic> map) {
+    return Attendance(
+      id: map['id'],
+      studentId: map['studentId'],
+      date: DateTime.parse(map['date']),
+      isPresent: map['isPresent'] == 1,
+    );
+  }
 }

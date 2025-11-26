@@ -1,27 +1,27 @@
+
 class Teacher {
-  int? id;
-  String name;
-  String? subject;
-  String? phoneNumber;
+  final int? id;
+  final String name;
+  final String subject;
+  final String? photoPath;
 
-  Teacher({
-    this.id,
-    required this.name,
-    this.subject,
-    this.phoneNumber,
-  });
+  Teacher({this.id, required this.name, required this.subject, this.photoPath});
 
-  factory Teacher.fromMap(Map<String, dynamic> json) => Teacher(
-        id: json["id"],
-        name: json["name"],
-        subject: json["subject"],
-        phoneNumber: json["phone_number"],
-      );
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'subject': subject,
+      'photoPath': photoPath,
+    };
+  }
 
-  Map<String, dynamic> toMap() => {
-        "id": id,
-        "name": name,
-        "subject": subject,
-        "phone_number": phoneNumber,
-      };
+  factory Teacher.fromMap(Map<String, dynamic> map) {
+    return Teacher(
+      id: map['id'],
+      name: map['name'],
+      subject: map['subject'],
+      photoPath: map['photoPath'],
+    );
+  }
 }
